@@ -1,0 +1,500 @@
+04/01/2018
+
+
+System.InvalidOperationException: 'The ForeignKeyAttribute on property 'ProductsSold'
+ on type 'MVCKO.Models.KOCustomer' is not valid. 
+The foreign key name 'CustomerId' was not found on the dependent type 
+'MVCKO.Models.KOProductSold'. 
+The Name value should be a comma separated list of foreign key property names.'
+
+so added CustomerId in GetProductSolds as
+CustomerId = p.CustomerId,
+
+and in KOProductSold as
+public Nullable<int> CustomerId { get; set; }
+
+same error occured for StoreId.
+solved problem with same way.
+
+now
+"Object reference not set to an instance of an object."
+when added dropdownlist code in create file as
+
+added following code in Create Action method of ProductSold controller
+ViewBag.ProductName = new SelectList(db.KOProducts, "Id", "Name");
+and added 
+@Html.DropDownList("ProductName", "Select Product Name")
+instead of EditorFor
+
+create is now working fine and showing combo with product names from product class
+
+now its saving only date on create's save but not product name.
+
+added in ProdcutSoldController class
+        public long Create([Bind(Include = "DateSold,ProductId,ProductName")] KOProductSold productSold)
+        public ActionResult Edit([Bind(Include = "ID,DateSold,ProductId,ProductName")] KOProductSold productSold)
+
+
+
+
+
+
+____________________________________________________
+
+ProductSoldController.cs,
+GetProductSolds
+{
+	var productSolds = (from p in db.KOProductsSold
+		select p).ToList()
+		.select(p => new KOProductSold
+		{
+			//these are properties
+			ID = p.ID,
+			DateSold
+			ProductId
+			ProductName
+		})
+return Json(productSolds, JsonRequestBehavior.AllowGet);
+}
+------------
+[HttpPost]
+[ValidateAntiForgeryToken]
+//to create
+public long Create([Bind(Include = "DateSold,ProductId,CustomerId,StoreId")] KOProductSold productSold)
+        {
+            long id = 0;
+            if (ModelState.IsValid)
+            {
+                db.KOProductsSold.Add(productSold);
+                db.SaveChanges();
+                return productSold.ID;
+            }
+            return id;
+        }
+-------------
+//post KOProductSold/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "ID,DateSold,ProductId,CustomerId,StoreId")] KOProductSold productSold)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(productSold).State = EntityState.Modified;
+                db.SaveChanges();
+                return new HttpStatusCodeResult(200, "Success");
+            }
+            return new HttpStatusCodeResult(404, "Unable to update.");
+        }
+-------------
+_____________________________
+
+in KOProductSold, cs,
+        public int ID { get; set; }
+        public Nullable<System.DateTime> DateSold { get; set; }
+        public Nullable<int> ProductId { get; set; }
+        public Nullable<int> CustomerId { get; set; }
+        public Nullable<int> StoreId { get; set; }
+
+        public virtual KOProduct KOProduct { get; set; }
+        public virtual KOCustomer KOCustomer { get; set; }
+        public virtual KOStore KOStore { get; set; }
+        public string ProductName { get; internal set; }
+        public string CustomerName { get; internal set; }
+        public string StoreName { get; internal set; }
+
+-------------
+_____________________________
+
+in Create.cshtml,
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateSold, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateSold, new
+           {
+               htmlAttributes = new
+               {
+                   @class = "form-control",
+                   data_bind = "value: newProductSold.DateSold"
+               }
+           })
+            </div>
+
+ProductName, CustomerName, StoreName
+-------------
+_____________________________
+
+in Delete.cshtml,
+
+    <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(model => model.ID)</dt>
+        <dd data-bind="text: selectedProductSold.ID"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.DateSold)</dt>
+        <dd data-bind="text: selectedProductSold.DateSold"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.ProductName)</dt>
+        <dd data-bind="text: selectedProductSold.ProductName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.CustomerName)</dt>
+        <dd data-bind="text: selectedProductSold.CustomerName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.StoreName)</dt>
+        <dd data-bind="text: selectedProductSold.StoreName"></dd>
+
+    </dl>
+
+
+-------------
+_____________________________
+
+in Details.cshtml,
+    <dl class="dl-horizontal">
+
+        <dt>@Html.DisplayNameFor(model => model.ID)</dt>
+        <dd data-bind="text: selectedProductSold.ID"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.DateSold)</dt>
+        <dd data-bind="text: selectedProductSold.DateSold"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.ProductName)</dt>
+        <dd data-bind="text: selectedProductSold.ProductName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.CustomerName)</dt>
+        <dd data-bind="text: selectedProductSold.CustomerName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.StoreName)</dt>
+        <dd data-bind="text: selectedProductSold.StoreName"></dd>
+
+    </dl>
+
+-------------
+_____________________________
+
+Edit.cshtml,
+    <div class="form-horizontal">
+        <h4>ProductSold</h4>
+        <hr />
+        @Html.HiddenFor(model => model.ID, htmlAttributes: new { data_bind = "value: newProductSold.ID" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateSold, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateSold, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newProductSold.DateSold" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProductName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ProductName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newProductSold.ProductName" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newProductSold.CustomerName" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newProductSold.StoreName" } })
+            </div>
+        </div>
+
+-------------
+_____________________________
+
+Index.cshtml,
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ID)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DateSold)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CustomerName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StoreName)
+        </th>
+        <th>Actions</th>
+    </tr>
+
+-------------
+
+    <tbody data-bind="foreach: productSolds">
+        <tr>
+            <td data-bind="text: ID"></td>
+            <td data-bind="text: DateSold"></td>
+            <td data-bind="text: ProductName"></td>
+            <td data-bind="text: CustomerName"></td>
+            <td data-bind="text: StoreName"></td>
+
+--------------
+
+        function ProductSold(data) {
+            var self = this;
+            self.ID = ko.observable();
+            self.DateSold = ko.observable().extend({ date: true });
+            self.ProductName = ko.observable();
+            self.CustomerName = ko.observable();
+            self.StoreName = ko.observable();
+
+            if (data) {
+                self.ID(data.ID);
+                self.DateSold(moment(data.DateSold).format("DD/MM/YYYY"));
+                self.ProductName(data.ProductName);
+                self.CustomerName(data.CustomerName);
+                self.StoreName(data.StoreName);
+            }
+        }
+
+
+
+
+-------------
+_____________________________
+
+-------------
+_____________________________
+
+<a href="javascript:void(0);" data-bind="click: createProductSold"
+       class="btn-create btn btn-primary">Add ProductSold</a>
+
+then th headers
+        <th>
+            @Html.DisplayNameFor(model => model.ID)
+        </th>
+id, datesold, productname, customername, storename, action
+
+then data-bind="text:
+    <tbody data-bind="foreach: productSolds">
+        <tr>
+            <td data-bind="text: ID"></td>
+datesold, productname, customername, storename
+
+then for details, edit and delete buttons:
+            <td>
+                <a href="javascript:void(0);" data-bind="click: $parent.viewProductSold"
+                   class="btn-details btn btn-default">Details</a>
+                <a href="javascript:void(0);" data-bind="click: $parent.editProductSold"
+                   class="btn-edit btn btn-default">Edit</a>
+                <a href="javascript:void(0);" data-bind="click: $parent.deleteProductSold"
+                   class="btn-delete btn btn-default">Delete</a>
+            </td>
+
+---------------------------------------
+
+03/01/18
+in product,
+add working
+details working
+edit working
+delete working and need to show proper message if product is being
+used in product sold. will not allow to delete.
+
+in product sold,
+product customer and store related information is not getting saved.
+
+need to show product customer and store
+create - need to show product, etc list
+
+its picking data properly from database
+showing proerly
+but if we edit it, it deletes product details on edit save
+date is edited properly.
+
+----------------------------------------
+
+20/12/17
+
+DataBinding: 'MVCKO.Models.KOProduct' does not contain a property with the name 'ProductName'. 
+Description: An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code. 
+Exception Details: System.Web.HttpException: DataBinding: 'MVCKO.Models.KOProduct' does not contain a property with the name 'ProductName'.
+
+System.NullReferenceException: 'Object reference not set to an instance of an object.'
+-----------------------------------------
+
+
+System.Web.HttpException occurred
+  HResult=0x80004005
+  Message=DataBinding: 'MVCKO.Models.KOProduct' does not contain a property with the name 'ProductName'.
+  Source=<Cannot evaluate the exception source>
+  StackTrace:
+<Cannot evaluate the exception stack trace>
+
+
+System.Web.HttpException: 'DataBinding: 'MVCKO.Models.KOProduct' does not contain a property with the name 'ProductName'.'
+
+SCRIPT438: Object doesn't support property or method 'ProductName'
+--------------------
+19/12/17
+From GetProductSolds i.e. Index view:
+
+Only date is showing.
+DateSold field is showing this format
+/Date(971100000000)/
+to change the format, need to add moment.js library
+
+Other fields are not showing.
+-----------------
+If clicked on Add ProductSold,
+it shows
+DateSold
+ProductName
+Id
+Product Name
+Price
+CustomerName
+Id
+CustomerName
+CustomerAddress
+StoreName
+Id
+StoreName
+StoreAddress
+-----------------
+Details:
+Showing
+ID
+DateSold
+ProductName
+CustomerName
+StoreName
+but shows data only for ID and DateSold
+-----------------
+Edit:
+Showing all fields like create
+and data for DateSold
+Also checking validation and showing message, Please enter a proper date
+
+-----------------
+Delete
+
+-----------------
+
+
+
+---------------------------------------------
+
+18/12/17
+Error:
+HTTP404: NOT FOUND - The server has not found anything matching
+the requested URI (Uniform Resource Identifier)
+(XHR)GET - http://localhost:53487/KOProducts/Create
+
+The resource cannot be found. 
+Description: HTTP 404. The resource you are looking for (or one of its dependencies) could have been removed, had its name changed, or is temporarily unavailable.  Please review the following URL and make sure that it is spelled correctly. 
+
+Requested URL: /KOProducts/Create
+-------------------------------------
+
+CHANGED TO PROPER CONTROLLER Product/GetProducts
+SOLVED THE PROBLEM
+
+------------------------------------------
+
+System.InvalidOperationException occurred
+  HResult=0x80131509
+  Message=The model backing the 'KOModel' context has changed since the database was created. Consider using Code First Migrations to update the database (http://go.microsoft.com/fwlink/?LinkId=238269).
+  Source=EntityFramework
+
+-------------------------------------------
+
+enabled database
+updated database
+now when ran the software,
+
+The entity or complex type 'MVCKO.Models.KOProduct' cannot be constructed in a LINQ to Entities query. 
+Description: An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code. 
+Exception Details: System.NotSupportedException: The entity or complex type 'MVCKO.Models.KOProduct' cannot be constructed in a LINQ to Entities query.
+Source Error: 
+An unhandled exception was generated during the execution of the current web request. Information regarding the origin and location of the exception can be identified using the exception stack trace below. 
+
+ADDED this code with ToList:
+var products = (from ru in db.KOProducts
+                            select ru).ToList()
+                           .Select(ru => new KOProduct
+                           {
+                               ID = ru.ID,
+                               Name = ru.Name,
+                               Price = ru.Price
+                           });
+
+instead of this code:
+            //var products = db.KOProducts.Select(p => new KOProduct
+            //{
+            //    ID = p.ID,
+            //    Name = p.Name,
+            //    Price = p.Price
+            //});
+            return Json(products, JsonRequestBehavior.AllowGet);
+
+and the explanation for this on stackoverflow is as follows:
+Your problem is that, as the error message says, L2E doesn't know about your entity. The way it works is that nothing happens until you enumerate the query. In your case, calling ToList() will do that. At that point, the database will try and execute the query, find it doesn't know about your entity, and give an exception.
+
+What you need to do is construct your query in such a way that the bit that is executed on the database (ie before you enumerate) doesn't contain any reference to your entities, then after you've enumerated (by which time the results will be in memory, and detached from the database) you can create the entity.
+
+---------------------------------------------
+
+Notes:
+ko.validation.init();
+is used to enable validation.
+
+very useful related link:
+https://github.com/Knockout-Contrib/Knockout-Validation/wiki/Getting-Started
+
+native rules:
+https://github.com/Knockout-Contrib/Knockout-Validation/wiki/Native-Rules
+
+Tri's project link:
+https://docs.microsoft.com/en-us/aspnet/mvc/overview/getting-started/getting-started-with-ef-using-mvc/implementing-basic-crud-functionality-with-the-entity-framework-in-asp-net-mvc-application#overpost
+
+------------------------------
+
+The entity or complex type 'MVCKO.Models.KOStore' cannot be constructed in a LINQ to Entities query. 
+Description: An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code. 
+
+Exception Details: System.NotSupportedException: The entity or complex type 'MVCKO.Models.KOStore' cannot be constructed in a LINQ to Entities query.
+
+Source Error: 
+
+An unhandled exception was generated during the execution of the current web request. Information regarding the origin and location of the exception can be identified using the exception stack trace below. 
+
+Same code as was used in Product in GetProduct copied here and it worked.
+
+---------------------------------------
+
+What Does JavaScript Void(0) Mean?
+
+The void operator evaluates the given expression and then returns undefined.
+
+The void operator is often used merely to obtain the undefined primitive value, usually using “void(0)” (which is equivalent to “void 0”). In these cases, the global variable undefined can be used instead (assuming it has not been assigned to a non-default value).
+
+JavaScript void is often used when, inserting an expression into a web page may produce an unwanted side-effect.
+
+By using JavaScript:Void(0), you can eliminate the unwanted side-effect, because it will return the undefined primative value.
+
+A common usage of JavaScript:Void(0) is with hyperlinks.
+
+Sometimes, you may need to call some JavaScript from within a link. Normally, when you click a link, the browser loads a new page or refreshes the same page (depending on the URL specified). But you probably don't want this to happen if you've attached some JavaScript to that link.
+
+To prevent the page from refreshing, you could use JavaScript:void(0).
+
+---------------------------------------
+
+SCRIPT5007: Unable to get property 'push' of undefined or null reference
+ProductSold (179,33)
+      //Add the new sale into 'sales' array
+                                self.productSold.push(self.newProductSold);
+                                $('#my-modal').modal('hide');
+                            }
+
+

@@ -1,0 +1,67 @@
+﻿@*ProductSold*@
+
+@model MVCKO.Models.KOProductSold
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { id = "edit-productSold-form", action = "javascript:void(0);" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>ProductSold</h4>
+        <hr />
+        @Html.HiddenFor(model => model.ID, htmlAttributes: new { data_bind = "value: newProductSold.ID" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateSold, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateSold, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newProductSold.DateSold" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProductName, htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                @Html.DropDownList("ProductId", null,
+           htmlAttributes: new
+           {
+               @class = "form-control",
+               //data_bind = "value: newProductSold.ProductId"
+               data_bind = "value: newProductSold.ProductId", type = "ProductName", id = "ProductId"
+
+                })
+            </div>
+
+            @*was working fine*@
+            @*<div class="col-md-10">
+                @Html.DropDownList("ProductName", null, htmlAttributes:new { @class = "form-control", data_bind = "value: newProductSold.ProductName"})
+            </div>*@
+        </div>
+
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newProductSold.CustomerName" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newProductSold.StoreName" } })
+            </div>
+        </div>*@
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" data-bind="click: editConfirmed" />
+            </div>
+        </div>
+    </div>
+}

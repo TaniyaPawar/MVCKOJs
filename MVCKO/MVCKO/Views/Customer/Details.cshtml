@@ -1,0 +1,28 @@
+﻿@*customer*@
+
+@model MVCKO.Models.KOCustomer
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div id="customer-details">
+    <h4>Customer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>@Html.DisplayNameFor(model => model.ID)</dt>
+        <dd data-bind="text: selectedCustomer.ID"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.CustomerName)</dt>
+        <dd data-bind="text: selectedCustomer.CustomerName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.CustomerAddress)</dt>
+        <dd data-bind="text: selectedCustomer.CustomerAddress"></dd>
+
+    </dl>
+</div>
+
+

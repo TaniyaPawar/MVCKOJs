@@ -1,0 +1,35 @@
+﻿@*store*@
+
+@model MVCKO.Models.KOStore
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div id="delete-store">
+    <h4>Store</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>@Html.DisplayNameFor(model => model.ID)</dt>
+        <dd data-bind="text: selectedStore.ID"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.StoreName)</dt>
+        <dd data-bind="text: selectedStore.StoreName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.StoreAddress)</dt>
+        <dd data-bind="text: selectedStore.StoreAddress"></dd>
+
+    </dl>
+
+    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "delete-store-form", action = "javascript:void(0);" }))
+    {
+        @Html.AntiForgeryToken()
+        <input hidden data-bind="value: selectedStore.ID" id="ID" name="ID" />
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" data-bind="click: deleteConfirmed" />
+        </div>
+    }
+</div>

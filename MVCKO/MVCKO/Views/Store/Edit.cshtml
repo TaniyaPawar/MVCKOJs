@@ -1,0 +1,40 @@
+﻿@*store*@
+
+@model MVCKO.Models.KOStore
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { id = "edit-store-form", action = "javascript:void(0);" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Store</h4>
+        <hr />
+        @Html.HiddenFor(model => model.ID, htmlAttributes: new { data_bind = "value: newStore.ID" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newStore.StoreName" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StoreAddress, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StoreAddress, new { htmlAttributes = new { @class = "form-control", data_bind = "value: newStore.StoreAddress" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" data-bind="click: editConfirmed" />
+            </div>
+        </div>
+    </div>
+}

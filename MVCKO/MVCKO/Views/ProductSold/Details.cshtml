@@ -1,0 +1,37 @@
+﻿@*ProductSold*@
+
+@model MVCKO.Models.KOProductSold
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div id="productSold-details">
+    <h4>Product Sold</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>@Html.DisplayNameFor(model => model.ID)</dt>
+        <dd data-bind="text: selectedProductSold.ID"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.DateSold)</dt>
+        <dd data-bind="text: selectedProductSold.DateSold"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.ProductId)</dt>
+        <dd data-bind="text: selectedProductSold.ProductId"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.ProductName)</dt>
+        <dd data-bind="text: selectedProductSold.ProductName"></dd>
+
+        @*<dt>@Html.DisplayNameFor(model => model.CustomerName)</dt>
+        <dd data-bind="text: selectedProductSold.CustomerName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.StoreName)</dt>
+        <dd data-bind="text: selectedProductSold.StoreName"></dd>*@
+
+    </dl>
+</div>
+
+

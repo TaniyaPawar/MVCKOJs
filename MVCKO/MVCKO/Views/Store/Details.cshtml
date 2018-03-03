@@ -1,0 +1,26 @@
+﻿@*store*@
+
+@model MVCKO.Models.KOStore
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div id="store-details">
+    <h4>Store</h4>
+    <hr />
+    <dl class="dl-horizontal">
+
+        <dt>@Html.DisplayNameFor(model => model.ID)</dt>
+        <dd data-bind="text: selectedStore.ID"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.StoreName)</dt>
+        <dd data-bind="text: selectedStore.StoreName"></dd>
+
+        <dt>@Html.DisplayNameFor(model => model.StoreAddress)</dt>
+        <dd data-bind="text: selectedStore.StoreAddress"></dd>
+    </dl>
+</div>
+
